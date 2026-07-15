@@ -1,177 +1,150 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaHotel } from 'react-icons/fa';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData]       = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors]           = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { login, error: authError, clearError } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    clearError();
-  }, [clearError]);
+  useEffect(() => { clearError(); }, [clearError]);
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validate = () => {
+    const e = {};
+    if (!formData.email)                             e.email    = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email))  e.email    = 'Enter a valid email';
+    if (!formData.password)                          e.password = 'Password is required';
+    setErrors(e);
+    return !Object.keys(e).length;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setFormData(p => ({ ...p, [name]: value }));
+    if (errors[name]) setErrors(p => ({ ...p, [name]: '' }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) return;
-
+    if (!validate()) return;
     setIsSubmitting(true);
     const result = await login(formData.email, formData.password);
     setIsSubmitting(false);
-
-    if (result.success) {
-      navigate('/hotels');
-    }
+    if (result.success) navigate('/hotels');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link
-              to="/register"
-              className="font-medium text-blue-600 hover:text-blue-500"
-            >
-              create a new account
+    <div className="min-h-screen bg-base flex">
+      {/* Left panel — decorative */}
+      <div className="hidden lg:flex flex-col justify-between w-[44%] bg-primary p-12 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: 'radial-gradient(circle at 70% 30%, #FAC775 0%, transparent 60%)' }} />
+        <Link to="/" className="flex items-center gap-2.5 relative z-10">
+          <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
+            <FaHotel className="text-white" />
+          </div>
+          <span className="text-2xl font-extrabold text-white tracking-tight">Stayfinity</span>
+        </Link>
+        <div className="relative z-10">
+          <blockquote className="text-white/90 text-xl font-medium leading-relaxed">
+            "The easiest hotel booking experience I've ever had. Confirmed in under a minute."
+          </blockquote>
+          <p className="mt-4 text-primary-200 text-sm font-medium">— Alex R., frequent traveller</p>
+        </div>
+        <div className="relative z-10 flex gap-3">
+          {[1,2,3].map(i => (
+            <div key={i} className="w-2 h-2 rounded-full bg-white/40" />
+          ))}
+        </div>
+      </div>
+
+      {/* Right panel — form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          {/* Mobile logo */}
+          <Link to="/" className="lg:hidden flex items-center gap-2 mb-8">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <FaHotel className="text-white text-sm" />
+            </div>
+            <span className="text-xl font-extrabold text-charcoal">
+              Stay<span className="text-primary">finity</span>
+            </span>
+          </Link>
+
+          <h2 className="text-3xl font-extrabold text-charcoal mb-1">Welcome back</h2>
+          <p className="text-muted mb-8">
+            New here?{' '}
+            <Link to="/register" className="text-primary font-semibold hover:text-primary-600">
+              Create an account
             </Link>
           </p>
-        </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-semibold text-charcoal mb-1.5">
                 Email address
               </label>
-              <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaEnvelope className="h-5 w-5 text-gray-400" />
-                </div>
+              <div className="relative">
+                <FaEnvelope className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-sm" />
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className={`appearance-none relative block w-full pl-10 pr-3 py-2 border ${
-                    errors.email ? 'border-red-300' : 'border-gray-300'
-                  } placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
-                  placeholder="Enter your email"
+                  id="email" name="email" type="email" autoComplete="email"
+                  className={`input-field pl-10 ${errors.email ? 'border-red-400 focus:ring-red-400/30' : ''}`}
+                  placeholder="you@example.com"
                   value={formData.email}
                   onChange={handleChange}
                 />
               </div>
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-              )}
+              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
             </div>
 
+            {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-semibold text-charcoal mb-1.5">
                 Password
               </label>
-              <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="h-5 w-5 text-gray-400" />
-                </div>
+              <div className="relative">
+                <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-sm" />
                 <input
-                  id="password"
-                  name="password"
+                  id="password" name="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
-                  required
-                  className={`appearance-none relative block w-full pl-10 pr-10 py-2 border ${
-                    errors.password ? 'border-red-300' : 'border-gray-300'
-                  } placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
+                  className={`input-field pl-10 pr-11 ${errors.password ? 'border-red-400 focus:ring-red-400/30' : ''}`}
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-charcoal"
+                  onClick={() => setShowPassword(p => !p)}
                 >
-                  {showPassword ? (
-                    <FaEyeSlash className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <FaEye className="h-5 w-5 text-gray-400" />
-                  )}
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
+              {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
             </div>
-          </div>
 
-          {authError && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-              <p className="text-sm text-red-600">{authError}</p>
-            </div>
-          )}
+            {authError && (
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                <p className="text-sm text-red-600">{authError}</p>
+              </div>
+            )}
 
-          <div>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-primary py-3 text-base disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? (
-                <div className="spinner"></div>
-              ) : (
-                'Sign in'
-              )}
+              {isSubmitting ? <div className="spinner mx-auto" /> : 'Sign in'}
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
