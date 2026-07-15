@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaHotel, FaCheckCircle } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaArrowRight, FaCheckCircle } from 'react-icons/fa';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '', email: '', password: '', confirmPassword: ''
-  });
-  const [showPassword, setShowPassword]               = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors]                           = useState({});
-  const [isSubmitting, setIsSubmitting]               = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm,  setShowConfirm]  = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { register, error: authError, clearError } = useAuth();
   const navigate = useNavigate();
@@ -19,20 +17,19 @@ const Register = () => {
 
   const validate = () => {
     const e = {};
-    if (!formData.name.trim())                          e.name            = 'Name is required';
-    else if (formData.name.trim().length < 2)           e.name            = 'At least 2 characters';
-    if (!formData.email)                                e.email           = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email))     e.email           = 'Enter a valid email';
-    if (!formData.password)                             e.password        = 'Password is required';
-    else if (formData.password.length < 6)              e.password        = 'Minimum 6 characters';
-    if (!formData.confirmPassword)                      e.confirmPassword = 'Please confirm your password';
+    if (!formData.name.trim())                      e.name            = 'Name is required';
+    else if (formData.name.trim().length < 2)        e.name            = 'Name must be at least 2 characters';
+    if (!formData.email)                             e.email           = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email))  e.email           = 'Invalid email address';
+    if (!formData.password)                          e.password        = 'Password is required';
+    else if (formData.password.length < 6)           e.password        = 'At least 6 characters required';
+    if (!formData.confirmPassword)                   e.confirmPassword = 'Please confirm your password';
     else if (formData.password !== formData.confirmPassword) e.confirmPassword = 'Passwords do not match';
     setErrors(e);
     return !Object.keys(e).length;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = ({ target: { name, value } }) => {
     setFormData(p => ({ ...p, [name]: value }));
     if (errors[name]) setErrors(p => ({ ...p, [name]: '' }));
   };
@@ -46,138 +43,70 @@ const Register = () => {
     if (result.success) navigate('/hotels');
   };
 
-  const perks = [
-    'Instant booking confirmation',
-    'Access to 2 400+ hotels',
-    'Free cancellation on most stays',
-  ];
+  const Field = ({ id, label, type = 'text', icon: Icon, show, onToggle, placeholder, autoComplete }) => (
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium text-charcoal mb-1.5">{label}</label>
+      <div className="relative">
+        <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" size={14} />
+        <input
+          id={id} name={id}
+          type={onToggle ? (show ? 'text' : 'password') : type}
+          autoComplete={autoComplete}
+          value={formData[id]} onChange={handleChange}
+          placeholder={placeholder}
+          className={`input-field pl-10 ${onToggle ? 'pr-10' : ''} ${errors[id] ? 'border-red-400 focus:ring-red-300' : ''}`}
+        />
+        {onToggle && (
+          <button type="button" onClick={onToggle}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-charcoal transition-colors">
+            {show ? <FaEyeSlash size={15} /> : <FaEye size={15} />}
+          </button>
+        )}
+      </div>
+      {errors[id] && <p className="mt-1 text-xs text-red-500">{errors[id]}</p>}
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-base flex">
-      {/* Left decorative */}
-      <div className="hidden lg:flex flex-col justify-between w-[44%] bg-primary p-12 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10"
-          style={{ backgroundImage: 'radial-gradient(circle at 30% 70%, #FAC775 0%, transparent 60%)' }} />
-        <Link to="/" className="flex items-center gap-2.5 relative z-10">
-          <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
-            <FaHotel className="text-white" />
-          </div>
-          <span className="text-2xl font-extrabold text-white tracking-tight">Stayfinity</span>
-        </Link>
-        <div className="relative z-10 space-y-5">
-          <h3 className="text-white text-2xl font-bold leading-snug">
-            Start booking smarter,<br />not harder.
-          </h3>
-          <ul className="space-y-3">
-            {perks.map(p => (
-              <li key={p} className="flex items-center gap-3 text-white/90 text-sm">
-                <FaCheckCircle className="text-highlight flex-shrink-0" />
-                {p}
-              </li>
-            ))}
-          </ul>
+    <div className="min-h-screen flex">
+      {/* Left decorative panel */}
+      <div className="hidden lg:flex lg:w-1/2 bg-primary flex-col justify-between p-12">
+        <span className="text-2xl font-extrabold text-white tracking-tight">
+          Stay<span className="text-highlight">finity</span>
+        </span>
+        <div>
+          <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
+            Your next great<br />adventure starts here.
+          </h2>
+          {['Free to join', 'Best-price guarantee', 'Instant confirmation'].map(t => (
+            <div key={t} className="flex items-center gap-2 text-primary-100 text-sm mb-2">
+              <FaCheckCircle size={13} className="text-highlight" /> {t}
+            </div>
+          ))}
         </div>
-        <div className="relative z-10 flex gap-3">
-          {[1,2,3].map(i => <div key={i} className="w-2 h-2 rounded-full bg-white/40" />)}
+        <div className="flex gap-2">
+          {['#FAC775','#D85A30','#0F6E56'].map(c => (
+            <div key={c} className="w-8 h-2 rounded-full opacity-70" style={{ background: c }} />
+          ))}
         </div>
       </div>
 
       {/* Right form */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center bg-base px-4 py-16">
         <div className="w-full max-w-md">
-          <Link to="/" className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <FaHotel className="text-white text-sm" />
-            </div>
-            <span className="text-xl font-extrabold text-charcoal">
-              Stay<span className="text-primary">finity</span>
-            </span>
-          </Link>
-
-          <h2 className="text-3xl font-extrabold text-charcoal mb-1">Create your account</h2>
-          <p className="text-muted mb-8">
+          <h1 className="text-3xl font-extrabold text-charcoal mb-1">Create account</h1>
+          <p className="text-muted text-sm mb-8">
             Already have one?{' '}
-            <Link to="/login" className="text-primary font-semibold hover:text-primary-600">
-              Sign in
-            </Link>
+            <Link to="/login" className="text-primary font-semibold hover:underline">Sign in</Link>
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-charcoal mb-1.5">Full name</label>
-              <div className="relative">
-                <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-sm" />
-                <input
-                  id="name" name="name" type="text" autoComplete="name"
-                  className={`input-field pl-10 ${errors.name ? 'border-red-400' : ''}`}
-                  placeholder="Jane Doe"
-                  value={formData.name}
-                  onChange={handleChange}
-                />
-              </div>
-              {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
-            </div>
-
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-charcoal mb-1.5">Email address</label>
-              <div className="relative">
-                <FaEnvelope className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-sm" />
-                <input
-                  id="email" name="email" type="email" autoComplete="email"
-                  className={`input-field pl-10 ${errors.email ? 'border-red-400' : ''}`}
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </div>
-              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
-            </div>
-
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-charcoal mb-1.5">Password</label>
-              <div className="relative">
-                <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-sm" />
-                <input
-                  id="password" name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  className={`input-field pl-10 pr-11 ${errors.password ? 'border-red-400' : ''}`}
-                  placeholder="Min. 6 characters"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-                <button type="button" className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-charcoal"
-                  onClick={() => setShowPassword(p => !p)}>
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              </div>
-              {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
-            </div>
-
-            {/* Confirm password */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-charcoal mb-1.5">Confirm password</label>
-              <div className="relative">
-                <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-sm" />
-                <input
-                  id="confirmPassword" name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  className={`input-field pl-10 pr-11 ${errors.confirmPassword ? 'border-red-400' : ''}`}
-                  placeholder="Re-enter password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                />
-                <button type="button" className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-charcoal"
-                  onClick={() => setShowConfirmPassword(p => !p)}>
-                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              </div>
-              {errors.confirmPassword && <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>}
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <Field id="name"            label="Full name"        icon={FaUser}    placeholder="Your full name"  autoComplete="name" />
+            <Field id="email"           label="Email address"   icon={FaEnvelope} placeholder="you@example.com" autoComplete="email" />
+            <Field id="password"        label="Password"        icon={FaLock}     placeholder="Min. 6 characters"
+              show={showPassword} onToggle={() => setShowPassword(!showPassword)} autoComplete="new-password" />
+            <Field id="confirmPassword" label="Confirm password" icon={FaLock}    placeholder="Repeat password"
+              show={showConfirm}  onToggle={() => setShowConfirm(!showConfirm)}   autoComplete="new-password" />
 
             {authError && (
               <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
@@ -185,14 +114,17 @@ const Register = () => {
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full btn-primary py-3 text-base disabled:opacity-60 disabled:cursor-not-allowed mt-2"
-            >
-              {isSubmitting ? <div className="spinner mx-auto" /> : 'Create Account'}
+            <button type="submit" disabled={isSubmitting}
+              className="w-full btn-primary flex items-center justify-center gap-2 py-3.5 rounded-xl mt-2 disabled:opacity-60 disabled:cursor-not-allowed">
+              {isSubmitting ? <span className="spinner" /> : <>Create account <FaArrowRight size={13} /></>}
             </button>
           </form>
+
+          <p className="mt-5 text-center text-xs text-muted">
+            By signing up you agree to our{' '}
+            <span className="text-primary font-medium cursor-pointer hover:underline">Terms</span> and{' '}
+            <span className="text-primary font-medium cursor-pointer hover:underline">Privacy Policy</span>.
+          </p>
         </div>
       </div>
     </div>

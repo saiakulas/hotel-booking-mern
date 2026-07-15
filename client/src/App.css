@@ -1,8 +1,6 @@
 /* Stayfinity — app-level overrides */
 
-.container {
-  max-width: 1200px;
-}
+.container { max-width: 1200px; }
 
 /* Loading overlay */
 .loading-overlay {
@@ -29,28 +27,28 @@
   to   { transform: translateX(0);    opacity: 1; }
 }
 
-/* react-datepicker skin — Stayfinity palette */
+/* react-datepicker skin */
 .react-datepicker {
   font-family: 'Inter', sans-serif;
   border: 1px solid #e5e7eb;
   border-radius: 1rem;
   box-shadow: 0 8px 28px rgba(15,110,86,0.13);
+  overflow: hidden;
 }
 .react-datepicker__header {
   background: #0F6E56;
   border-bottom: none;
-  border-radius: 0.9rem 0.9rem 0 0;
 }
 .react-datepicker__current-month,
-.react-datepicker__day-name {
-  color: #ffffff;
-}
+.react-datepicker__day-name { color: #fff; font-weight: 600; }
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected {
-  background: #D85A30;
+  background: #D85A30 !important;
   border-radius: 50%;
+  color: #fff;
 }
 .react-datepicker__day:hover {
   background: #C5E4DA;
   border-radius: 50%;
 }
+.react-datepicker__navigation-icon::before { border-color: #fff; }

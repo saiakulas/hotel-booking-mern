@@ -62,29 +62,23 @@ code {
   0%, 100% { opacity: 1; }
   50%       { opacity: .5; }
 }
-@keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
 
 .fade-in      { animation: fadeIn 0.55s ease-out; }
 .slide-in-up  { animation: slideInUp 0.55s ease-out; }
 .animate-float { animation: float 3s ease-in-out infinite; }
 .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
-/* ─── Component Utilities ───────────────────────────────────── */
-
-/* Buttons */
+/* ─── Buttons ───────────────────────────────────────────────── */
 .btn-primary {
   @apply inline-flex items-center justify-center gap-2
          bg-primary text-white px-6 py-3 rounded-xl font-semibold
-         shadow-accent hover:bg-primary-600 active:bg-primary-700
+         hover:bg-primary-600 active:bg-primary-700
          transition-all duration-200;
 }
 .btn-accent {
   @apply inline-flex items-center justify-center gap-2
          bg-accent text-white px-6 py-3 rounded-xl font-semibold
-         shadow-accent hover:bg-accent-dark active:scale-95
+         hover:bg-accent-dark active:scale-95
          transition-all duration-200;
 }
 .btn-outline {
@@ -102,19 +96,19 @@ code {
 .btn-danger {
   @apply inline-flex items-center justify-center gap-2
          bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-semibold
-         transition-colors shadow;
+         transition-colors;
 }
 
-/* Cards */
+/* ─── Cards ─────────────────────────────────────────────────── */
 .card {
   @apply bg-white rounded-2xl border border-gray-100 shadow-card
-         hover:shadow-hover transition-shadow duration-250;
+         hover:shadow-hover transition-shadow duration-200;
 }
 .card-flat {
   @apply bg-white rounded-2xl border border-gray-100;
 }
 
-/* Inputs */
+/* ─── Inputs ────────────────────────────────────────────────── */
 .input-field {
   @apply w-full px-4 py-3 border border-gray-200 rounded-xl
          bg-white text-charcoal placeholder-muted
@@ -122,18 +116,16 @@ code {
          transition-all duration-200;
 }
 
-/* Badge */
-.badge {
-  @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold;
-}
-.badge-primary  { @apply badge bg-primary-50  text-primary; }
-.badge-accent   { @apply badge bg-orange-50   text-accent; }
-.badge-success  { @apply badge bg-emerald-50  text-emerald-700; }
-.badge-warning  { @apply badge bg-yellow-50   text-yellow-700; }
-.badge-danger   { @apply badge bg-red-50      text-red-700; }
-.badge-muted    { @apply badge bg-gray-100    text-muted; }
+/* ─── Badges ────────────────────────────────────────────────── */
+.badge            { @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold; }
+.badge-primary    { @apply badge bg-primary-50  text-primary; }
+.badge-accent     { @apply badge bg-orange-50   text-accent; }
+.badge-success    { @apply badge bg-emerald-50  text-emerald-700; }
+.badge-warning    { @apply badge bg-yellow-50   text-yellow-700; }
+.badge-danger     { @apply badge bg-red-50      text-red-700; }
+.badge-muted      { @apply badge bg-gray-100    text-muted; }
 
-/* Loading spinner */
+/* ─── Spinner ───────────────────────────────────────────────── */
 .spinner {
   border: 3px solid rgba(15, 110, 86, 0.15);
   border-top: 3px solid #0F6E56;
@@ -151,7 +143,7 @@ code {
   animation: spin 0.8s linear infinite;
 }
 
-/* Gradient text */
+/* ─── Gradient text ─────────────────────────────────────────── */
 .gradient-text {
   background: linear-gradient(135deg, #0F6E56 0%, #D85A30 100%);
   -webkit-background-clip: text;
@@ -159,23 +151,12 @@ code {
   background-clip: text;
 }
 
-/* Hover lift */
-.hover-lift {
-  @apply transition-all duration-250 hover:-translate-y-1 hover:shadow-hover;
-}
+/* ─── Misc ──────────────────────────────────────────────────── */
+.hover-lift   { @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-hover; }
+.divider      { @apply border-t border-gray-100 my-6; }
+.focus-ring   { @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2; }
 
-/* Status colours */
 .status-confirmed { @apply badge-success; }
 .status-cancelled { @apply badge-danger; }
 .status-pending   { @apply badge-warning; }
 .status-completed { @apply badge-muted; }
-
-/* Section divider */
-.divider {
-  @apply border-t border-gray-100 my-6;
-}
-
-/* Focus ring */
-.focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2;
-}

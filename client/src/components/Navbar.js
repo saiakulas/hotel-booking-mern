@@ -1,84 +1,95 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FaHotel, FaUser, FaSignOutAlt, FaCrown, FaBars, FaTimes } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaBars, FaTimes, FaCrown } from 'react-icons/fa';
+
+/* ── Stayfinity wordmark (inline SVG for crisp rendering) ── */
+const StayfinityLogo = () => (
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <rect width="32" height="32" rx="9" fill="#0F6E56"/>
+    <path d="M8 22 L16 10 L24 22" stroke="#FAC775" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M11.5 18 H20.5" stroke="#FAC775" strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="16" cy="10" r="2" fill="#D85A30"/>
+  </svg>
+);
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+    setMenuOpen(false);
   };
 
-  return (
-    <nav className="bg-white border-b border-gray-100 shadow-card sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+  const close = () => setMenuOpen(false);
 
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-                <FaHotel className="text-white text-sm" />
-              </div>
-              <span className="text-xl font-bold text-charcoal tracking-tight">
-                Stay<span className="text-primary">finity</span>
-              </span>
-            </Link>
-          </div>
+  return (
+    <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+
+          {/* Brand */}
+          <Link to="/" onClick={close} className="flex items-center gap-2.5 group">
+            <StayfinityLogo />
+            <span className="text-xl font-extrabold tracking-tight text-charcoal group-hover:text-primary transition-colors">
+              Stay<span className="text-primary">finity</span>
+            </span>
+          </Link>
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
             {isAuthenticated ? (
               <>
-                <Link to="/hotels" className="btn-ghost text-sm">
+                <Link to="/hotels"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-muted hover:text-primary hover:bg-primary-50 transition-all duration-150">
                   Hotels
                 </Link>
+
                 {user?.role !== 'admin' && (
-                  <Link to="/bookings" className="btn-ghost text-sm">
+                  <Link to="/bookings"
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-muted hover:text-primary hover:bg-primary-50 transition-all duration-150">
                     My Bookings
                   </Link>
                 )}
+
                 {user?.role === 'admin' && (
-                  <Link
-                    to="/admin"
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium
-                               bg-primary-50 text-primary border border-primary/20
-                               hover:bg-primary hover:text-white transition-all duration-200"
-                  >
-                    <FaCrown className="text-xs" />
-                    Admin Dashboard
+                  <Link to="/admin"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-primary bg-primary-50 border border-primary-100 hover:bg-primary-100 transition-all duration-150">
+                    <FaCrown className="text-highlight-dark" size={12} />
+                    Admin
                   </Link>
                 )}
 
                 {/* User pill */}
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-100 bg-base ml-2">
-                  <div className="w-7 h-7 bg-primary-100 rounded-lg flex items-center justify-center">
-                    <FaUser className="text-primary text-xs" />
+                <div className="flex items-center gap-2 ml-2 px-3 py-1.5 rounded-xl border border-gray-100 bg-gray-50">
+                  <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center">
+                    <FaUser size={11} className="text-primary" />
                   </div>
-                  <span className="text-sm text-charcoal font-medium">{user?.name}</span>
+                  <span className="text-sm font-medium text-charcoal">{user?.name}</span>
                   {user?.role === 'admin' && (
-                    <span className="badge-primary text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">
-                      Admin
+                    <span className="badge bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold tracking-wide">
+                      ADMIN
                     </span>
                   )}
                 </div>
 
-                <button
-                  onClick={handleLogout}
-                  className="btn-accent text-sm px-4 py-2 ml-1"
-                >
-                  <FaSignOutAlt className="text-xs" />
+                <button onClick={handleLogout}
+                  className="ml-2 flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-accent hover:bg-accent-dark transition-all duration-200 shadow-sm">
+                  <FaSignOutAlt size={13} />
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="btn-ghost text-sm">Login</Link>
-                <Link to="/register" className="btn-primary text-sm px-5 py-2.5">
+                <Link to="/login"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-muted hover:text-primary hover:bg-primary-50 transition-all duration-150">
+                  Sign in
+                </Link>
+                <Link to="/register"
+                  className="ml-1 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary hover:bg-primary-600 transition-all duration-200 shadow-sm">
                   Get Started
                 </Link>
               </>
@@ -86,87 +97,73 @@ const Navbar = () => {
           </div>
 
           {/* Mobile hamburger */}
-          <div className="flex md:hidden items-center">
-            <button
-              aria-label="Toggle menu"
-              aria-expanded={isMobileMenuOpen}
-              className="p-2 rounded-xl text-muted hover:bg-primary-50 hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen
-                ? <FaTimes className="h-5 w-5" />
-                : <FaBars className="h-5 w-5" />}
-            </button>
-          </div>
+          <button
+            className="md:hidden p-2 rounded-lg text-muted hover:bg-gray-100 transition-colors"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
+          </button>
         </div>
       </div>
 
       {/* Mobile menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white">
-          <div className="px-4 py-3 space-y-1">
-            {isAuthenticated ? (
-              <>
-                <Link
-                  to="/hotels"
-                  className="block px-4 py-2.5 rounded-xl text-charcoal hover:bg-primary-50 hover:text-primary font-medium transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Hotels
-                </Link>
-                {user?.role !== 'admin' && (
-                  <Link
-                    to="/bookings"
-                    className="block px-4 py-2.5 rounded-xl text-charcoal hover:bg-primary-50 hover:text-primary font-medium transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    My Bookings
-                  </Link>
-                )}
-                {user?.role === 'admin' && (
-                  <Link
-                    to="/admin"
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-primary bg-primary-50 border border-primary/20 font-medium"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <FaCrown className="text-xs" /> Admin Dashboard
-                  </Link>
-                )}
-                <div className="flex items-center justify-between px-4 py-2.5 rounded-xl border border-gray-100 bg-base">
-                  <div className="flex items-center gap-2">
-                    <FaUser className="text-primary text-xs" />
-                    <span className="text-sm font-medium text-charcoal">{user?.name}</span>
-                  </div>
+      {menuOpen && (
+        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1 shadow-lg">
+          {isAuthenticated ? (
+            <>
+              {/* User pill */}
+              <div className="flex items-center gap-2 px-3 py-2 mb-2 rounded-xl bg-primary-50 border border-primary-100">
+                <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                  <FaUser size={12} className="text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-charcoal">{user?.name}</p>
                   {user?.role === 'admin' && (
-                    <span className="badge-primary text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">Admin</span>
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Admin</span>
                   )}
                 </div>
-                <button
-                  onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }}
-                  className="w-full btn-accent text-sm py-2.5"
-                >
-                  <FaSignOutAlt className="text-xs" /> Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="block px-4 py-2.5 rounded-xl text-charcoal hover:bg-primary-50 hover:text-primary font-medium transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Login
+              </div>
+
+              <Link to="/hotels" onClick={close}
+                className="block px-4 py-2.5 rounded-xl text-sm font-medium text-charcoal hover:bg-primary-50 hover:text-primary transition-colors">
+                Hotels
+              </Link>
+
+              {user?.role !== 'admin' && (
+                <Link to="/bookings" onClick={close}
+                  className="block px-4 py-2.5 rounded-xl text-sm font-medium text-charcoal hover:bg-primary-50 hover:text-primary transition-colors">
+                  My Bookings
                 </Link>
-                <Link
-                  to="/register"
-                  className="block px-4 py-2.5 rounded-xl text-white bg-primary font-medium text-center"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Get Started
+              )}
+
+              {user?.role === 'admin' && (
+                <Link to="/admin" onClick={close}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-primary bg-primary-50 border border-primary-100">
+                  <FaCrown size={12} className="text-highlight-dark" />
+                  Admin Dashboard
                 </Link>
-              </>
-            )}
-          </div>
+              )}
+
+              <button onClick={handleLogout}
+                className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-accent hover:bg-accent-dark transition-colors">
+                <FaSignOutAlt size={13} />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" onClick={close}
+                className="block px-4 py-2.5 rounded-xl text-sm font-medium text-charcoal hover:bg-gray-100 transition-colors">
+                Sign in
+              </Link>
+              <Link to="/register" onClick={close}
+                className="block px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary hover:bg-primary-600 text-center transition-colors">
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       )}
     </nav>
